@@ -61,7 +61,10 @@ extension CameraManagerPhotoOutput: @preconcurrency AVCapturePhotoCaptureDelegat
         else { return }
 
         let capturedCIImage = prepareCIImage(ciImage, parent.attributes.cameraFilters)
-        let capturedCGImage = prepareCGImage(capturedCIImage)
+        var capturedCGImage = prepareCGImage(capturedCIImage)
+        if let cgImage = capturedCGImage {
+            capturedCGImage = cropCGImageToCameraViewAspect(cgImage)
+        }
         let capturedUIImage = prepareUIImage(capturedCGImage)
         let capturedMedia = MCameraMedia(data: capturedUIImage)
 
@@ -99,5 +102,35 @@ private extension CameraManagerPhotoOutput {
             case (.landscapeRight, .front): .downMirrored
             default: .right
         }
+    }
+}
+private extension CameraManagerPhotoOutput {
+    func cropCGImageToCameraViewAspect(_ cgImage: CGImage) -> CGImage? {
+        let viewSize = parent.cameraView?.bounds.size ?? .zero
+        guard viewSize.width > 0, viewSize.height > 0 else { return cgImage }
+
+        let targetAspect = viewSize.width / viewSize.height
+        let imageWidth = CGFloat(cgImage.width)
+        let imageHeight = CGFloat(cgImage.height)
+        let imageAspect = imageWidth / imageHeight
+
+        var cropWidth = imageWidth
+        var cropHeight = imageHeight
+        if imageAspect > targetAspect {
+            cropWidth = imageHeight * targetAspect
+        } else {
+            cropHeight = imageWidth / targetAspect
+        }
+
+        let cropX = (imageWidth - cropWidth) / 2.0
+        let cropY = (imageHeight - cropHeight) / 2.0
+        let cropRect = CGRect(
+            x: floor(cropX),
+            y: floor(cropY),
+            width: floor(cropWidth),
+            height: floor(cropHeight)
+        )
+
+        return cgImage.cropping(to: cropRect) ?? cgImage
     }
 }
