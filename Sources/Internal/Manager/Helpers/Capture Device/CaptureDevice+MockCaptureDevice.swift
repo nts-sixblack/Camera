@@ -17,8 +17,8 @@ class MockCaptureDevice: NSObject, CaptureDevice {
     var exposureDuration: CMTime { _exposureDuration }
     var exposureTargetBias: Float { _exposureTargetBias }
     var iso: Float { _iso }
-    var minAvailableVideoZoomFactor: CGFloat { 1 }
-    var maxAvailableVideoZoomFactor: CGFloat { 3.876 }
+    var minAvailableVideoZoomFactor: CGFloat { 0.5 }
+    var maxAvailableVideoZoomFactor: CGFloat { 10.0 }
     var minExposureDuration: CMTime { .init(value: 1, timescale: 1000) }
     var maxExposureDuration: CMTime { .init(value: 1, timescale: 5) }
     var minISO: Float { 1 }
