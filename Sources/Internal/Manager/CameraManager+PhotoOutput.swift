@@ -81,27 +81,8 @@ private extension CameraManagerPhotoOutput {
     func prepareUIImage(_ cgImage: CGImage?) -> UIImage? {
         guard let cgImage else { return nil }
 
-        let frameOrientation = getFixedFrameOrientation()
-        let orientation = UIImage.Orientation(frameOrientation)
-        let uiImage = UIImage(cgImage: cgImage, scale: 1.0, orientation: orientation)
+        let uiImage = UIImage(cgImage: cgImage, scale: 1.0, orientation: .right)
         return uiImage
-    }
-}
-private extension CameraManagerPhotoOutput {
-    func getFixedFrameOrientation() -> CGImagePropertyOrientation {
-        guard UIDevice.current.orientation != parent.attributes.deviceOrientation.toDeviceOrientation() else { return parent.attributes.frameOrientation }
-
-        return switch (parent.attributes.deviceOrientation, parent.attributes.cameraPosition) {
-            case (.portrait, .front): .left
-            case (.portrait, .back): .right
-            case (.landscapeLeft, .back): .down
-            case (.landscapeRight, .back): .up
-            case (.landscapeLeft, .front) where parent.attributes.mirrorOutput: .up
-            case (.landscapeLeft, .front): .upMirrored
-            case (.landscapeRight, .front) where parent.attributes.mirrorOutput: .down
-            case (.landscapeRight, .front): .downMirrored
-            default: .right
-        }
     }
 }
 private extension CameraManagerPhotoOutput {
@@ -109,7 +90,7 @@ private extension CameraManagerPhotoOutput {
         let viewSize = parent.cameraView?.bounds.size ?? .zero
         guard viewSize.width > 0, viewSize.height > 0 else { return cgImage }
 
-        let targetAspect = viewSize.width / viewSize.height
+        let targetAspect = viewSize.height / viewSize.width
         let imageWidth = CGFloat(cgImage.width)
         let imageHeight = CGFloat(cgImage.height)
         let imageAspect = imageWidth / imageHeight
