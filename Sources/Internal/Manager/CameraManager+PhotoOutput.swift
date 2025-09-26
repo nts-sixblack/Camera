@@ -93,7 +93,7 @@ private extension CameraManagerPhotoOutput {
         let targetAspect = viewSize.height / viewSize.width
         let imageWidth = CGFloat(cgImage.width)
         let imageHeight = CGFloat(cgImage.height)
-        let imageAspect = imageHeight / imageWidth
+        let imageAspect = imageWidth / imageHeight
 
         var cropWidth = imageWidth
         var cropHeight = imageHeight
